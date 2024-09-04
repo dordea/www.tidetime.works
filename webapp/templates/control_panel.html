@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Control panel{% endblock %}
+{% block content %}
+<br>
+<style>
+        @media screen and (max-width: 770px) {
+    .pull-left,
+    .pull-right {
+        width: 100% !important;
+    }
+}
+</style>
+<div class="container">
+  <div class="row justify-content-center align-items-baseline">
+    <div class="col text-center">
+        <span class="fa fa-cogs fa-2x text-dark"></span>
+      <h3 class="d-inline-block mb-0 text-success fa-1x "> </h3>
+      <h3 class="d-inline-block mb-0 fa-1x">Control Panel</h3>
+    </div>
+  </div>
+</div>
+<br>
+
+<div class="mt-3">
+    <div class="d-flex align-items-center justify-content-center">
+    <div class="form-group border border-dark rounded center w-75  px-5 py-1">
+
+      <div class="row justify-content-center align-items-baseline">
+    <div class="col text-center">
+        <span class="fa fa-users fa-2x text-dark"></span>
+      <h3 class="d-inline-block mb-0 text-success fa-1x "> </h3>
+      <h3 class="d-inline-block mb-0 fa-1x my-3">Users</h3>
+        <div class="pull-left">
+    {% set download_url = url_for('views.download_data') %}
+     <button class="btn btn-success fa fa-download w-100 my-3" id="downloadButtonexcel" onclick="window.location.href='{{ download_url }}'"> Excel</button>
+ </div>
+
+ <div class="pull-right">
+      {% set download_url_db = url_for('views.download_data_csv') %}
+     <button class="btn btn-success fa fa-download w-100 my-3" id="downloadButtondb" onclick="window.location.href='{{ download_url_db }}'"> CSV</button>
+
+ </div>
+    </div>
+  </div>
+
+    </div></div>
+    <div class="d-flex align-items-center justify-content-center">
+
+    <div class="form-group border border-dark rounded center w-100  px-5 py-1">
+    <!-- urmatoarea secventa de cod arata datele din baza de date -->
+<ul class="list-group list-group-flush">
+  {% for user in users %}
+    <li class="list-group-item  fa fa-calendar btn text-info" onclick="toggleRecords('{{ user.id }}')">
+      <a>{{ user.first_name }} {{ user.last_name }} ({{ counted[user.id] }} record/s)</a>
+    </li>
+    <div id="records_{{ user.id }}" style="display: none;">
+      <ul>
+        {% for note in details[user.id] %}
+
+        <li class="list-inline btn text-dark fa fa-edit" id="note_{{ note.id }}" onclick="show('{{note.date}}')"> {{ note.date }}</li>
+
+        <div id="{{note.date}}" style="display: none;" class=" rounded borderborder-dark px-3 py-1">
+             <ul class="list-inline d-flex justify-content-center">
+                <li class="list-inline-item" id="notes_{{ note.id }}">
+                <input id="{{note.id}}.{{ note.hours }}" class="list-inline-item mb-3 text-danger" size="1" value="{{ note.hours }}">hours on
+                <input id="{{note.id}}.{{ note.project }}" class="list-inline-item text-danger" size="9" value=" {{ note.project }}"> -
+                <input id="{{note.id}}.description" class="list-inline-item text-danger" size="20" value="{{ note.description }}"></li>
+                <button id="s{{note.date}}" onclick="editRecord('{{ note.id }}','{{note.hours}}','{{note.project}}','{{note.date}}')" class="list-inline-item btn btn-warning fa fa-pencil h-25"></button>
+             </ul>
+        </div><br>
+         <!--<li class ="btn text-info" onclick="" >{{ note.date }} - {{ note.hours }} ore - {{ note.project }} - {{ note.description }}</li>-->
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</ul>
+
+</div>
+</div>
+</div>
+<br>
+<script>
+     function editRecord(noteId, hour, projects, date) {
+    // Obțineți valorile pe care doriți să le trimiteți către server
+    var description = document.getElementById(noteId + ".description").value;
+    var hours = document.getElementById(noteId + "." + hour).value;
+    var project = document.getElementById(noteId + "." + projects).value;
+
+  console.log(`noteId: ${noteId}`);
+console.log(`hours: ${hour}`);
+console.log(`project: ${projects}`);
+console.log(`description: ${description}`);
+console.log(`date: ${date}`);
+         // Trimiteți datele către server
+    fetch('/update_data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          note_id: noteId,
+          hours: hours,
+          project: project,
+          description: description,
+          date: date
+        })
+      })
+      .then(function(response) {
+        if (!response.ok) {
+            // throw new Error('A apărut o eroare la actualizarea datelor');
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        //alert('Datele au fost actualizate cu succes!');
+        window.location.reload();
+        // Aici puteți face alte acțiuni după ce datele au fost actualizate cu succes
+    })
+    .catch(function(error) {
+        //alert(error.message);
+        // Aici puteți trata erorile, dacă este necesar
+    });
+    return false;
+
+  }
+
+   function show(date) {
+
+    // Afiseaza div-ul corespunzator datei
+    var targetDiv = document.getElementById(date);
+    if (targetDiv.style.display === 'none') {
+      targetDiv.style.display = 'block';
+    } else {
+      targetDiv.style.display = 'none';
+    }
+  }
+function toggleRecords(userId) {
+  var recordsDiv = document.getElementById('records_' + userId);
+  if (recordsDiv.style.display === 'none') {
+    recordsDiv.style.display = 'block';
+    // Aici puteți încărca și afișa înregistrările din baza de date pentru utilizatorul cu ID-ul 'userId'
+  } else {
+    recordsDiv.style.display = 'none';
+  }
+}
+</script>
+
+{% endblock %}

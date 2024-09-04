@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Contact List{% endblock %}
+{% block content %}
+<br>
+<div class="container">
+  <div class="row justify-content-center align-items-baseline">
+    <div class="col text-center">
+        <span class="fa fa-address-book fa-2x text-success"></span>
+      <h3 class="d-inline-block mb-0 text-success fa-1x ">  {{current_user.company.lower().capitalize()}}</h3>
+      <h3 class="d-inline-block mb-0 fa-1x">Contact List</h3>
+    </div>
+  </div>
+</div>
+<br>
+<div class="container">
+    <!-- contacts card -->
+    <div class="card card-default" id="card_contacts">
+        <div id="contacts" class="panel-collapse collapse show" aria-expanded="true" style="">
+            <ul class="list-group pull-down" id="contact-list">
+                {% for user in users_same_company %}
+                <li class="list-group-item">
+                    <div class="row w-100">
+                        <div class="col-12 col-sm-6 col-md-2 px-0">
+                           <!-- <span class="fa fa-user-circle fa-5x pt-3 mx-auto d-block rounded-circle img-fluid" title="online now"></span>-->
+                            <img src="../static/img/avatar.png"  class="rounded-circle mx-auto d-block img-fluid">
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-9 text-center text-sm-left">
+                            <span class="fa fa-circle fa-1x text-success float-right pulse pt-2" title="online now"></span>
+                            <label class="name lead">{{user.first_name}} {{user.last_name}} ({{user.username}})</label>
+                            <br>
+                            <span class="fa fa-id-badge fa-fw text-muted" data-toggle="tooltip" title="" data-original-title="Function"></span>
+                            <span class="text-muted small">{{user.function}}</span>
+                            <br>
+                            <span class="fa fa-briefcase fa-fw text-muted" data-toggle="tooltip" title="" data-original-title="Company Name"></span>
+                            <span class="text-muted small">{{user.company.lower().capitalize()}}</span>
+                            <br>
+                            <span class="fa fa-mobile fa-fw text-muted" data-toggle="tooltip" ></span>
+                            <span class="text-muted small">{{user.phone}}</span>
+                            <br>
+                            <span class="fa fa-at fa-fw text-muted" data-toggle="tooltip" data-original-title="" title=""></span>
+                            <span class="text-muted small text-truncate">{{user.email}}</span>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <!--/contacts list-->
+        </div>
+    </div>
+</div>
+{% endblock %}

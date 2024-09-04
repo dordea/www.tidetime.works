@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<br>
+<div class="container">
+  <div class="row justify-content-center align-items-baseline">
+    <div class="col text-center">
+        <span class="fa fa-clock-o fa-2x text-dark"></span>
+      <h3 class="d-inline-block mb-0 text-success fa-1x "> </h3>
+      <h3 class="d-inline-block mb-0 fa-1x">Hours Logging</h3>
+    </div>
+  </div>
+</div>
+<br>
+<style>
+    /* Ascunde div-ul inițial */
+    #hidden_div {
+      display: none;
+    }
+  @media screen and (max-width: 770px) {
+    .pull-left,
+    .pull-right {
+        width: 100% !important;
+    }
+}
+  </style>
+<div class="container-fluid">
+    <button class="btn btn-block btn-dark btn-info" id="show_dates">Show my DB</button>
+</div><br>
+<div id="hidden_div" class="mt-3">
+    <div class="d-flex align-items-center justify-content-center">
+    <div class="form-group border border-dark rounded center w-75  px-5 py-1">
+            <h2 class="text-center">Total : {{monthly_totals[current_user.id]["total"]}} hours</h2>
+    </div></div>
+    <div class="d-flex align-items-center justify-content-center">
+
+    <div class="form-group border border-dark rounded center w-75  px-5 py-1">
+    <!-- urmatoarea secventa de cod arata datele din baza de date
+     for note in user.dates  -->
+<ul class="list-group list-group-flush" id="datess">
+ {% for note in monthly_totals[current_user.id]["details"] %}
+  <li class="list-group-item btn text-info">
+    <a onclick="changeInputValue('{{ note.date | urlencode }}:{{ note.hours | urlencode }}hours on{{ note.project | urlencode }}-{{ note.description | urlencode }}')" >{{ note.date }}: {{ note.hours }} hours on {{ note.project }} - {{ note.description }}</a>
+  </li>
+  {% endfor %}
+</ul>
+<!-- pina aici -->
+</div>
+</div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+
+function updates(event) {
+    event.preventDefault();
+    var dateValue = document.getElementById("date").value;
+    var hoursValue = document.getElementById("hours").value;
+    var projectValue = document.getElementById("project").value;
+    var descriptionValue = document.getElementById("description").value;
+
+    var dataToSend = {
+        date: dateValue,
+        hours: hoursValue,
+        project: projectValue,
+        description: descriptionValue
+    };
+    fetch('/update_data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            // throw new Error('A apărut o eroare la actualizarea datelor');
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        //alert('Datele au fost actualizate cu succes!');
+        window.location.reload();
+        // Aici puteți face alte acțiuni după ce datele au fost actualizate cu succes
+    })
+    .catch(function(error) {
+        //alert(error.message);
+        // Aici puteți trata erorile, dacă este necesar
+    });
+    return false;
+}
+function changeInputValue(text) {
+    var cleanedText = text.replace(/%0D%0A/g, '');
+    cleanedText = decodeURIComponent(cleanedText);
+    var parts = cleanedText.split(":");
+    document.getElementById("date").value = parts[0];
+    var hoursAndDescription = parts[1].split("hours on");
+    document.getElementById("hours").value = parseInt(hoursAndDescription[0]);
+    if (hoursAndDescription.length > 1) {
+        var projectAndDescription = hoursAndDescription[1].split("-");
+        var projectName = projectAndDescription[0].trim();
+        var projectSelect = document.getElementById("project");
+        var options = projectSelect.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].text === projectName) {
+                projectSelect.selectedIndex = i;
+                break;
+            }
+        }
+        if (projectAndDescription.length > 1) {
+            document.getElementById("description").value = projectAndDescription[1];
+        }
+    }
+
+    $("#hidden_div").toggle();
+    $("#afisare").toggle();
+    $("#show_dates").text(function (i, text) {
+        return text === "Show my DB" ? "Hide my DB" : "Show my DB";
+    });
+}
+
+    // Function to show/hide div when button is clicked
+    $(document).ready(function(){
+
+      $("#show_dates").click(function(){
+        $("#hidden_div").toggle();
+        $("#afisare").toggle();
+        $("#description").val('');
+        $("#hours").val('0');
+        $("#project").val('Project 1');
+        $("#date").val('{{current_date}}');
+        $(this).text(function(i, text){
+          return text === "Show my DB" ? "Hide my DB" : "Show my DB";
+        });
+      });
+
+    });
+
+</script>
+<form id="dates" method="POST" class="d-flex align-items-center justify-content-center">
+    <div class="form-group border border-dark rounded center w-75  px-5 py-1" id="afisare">
+        <label for="date">Select date:</label>
+        {%set current_date = date%}
+        <input class="form-control w-90"  type="date" id="date" name="date" value="{{current_date}}" min="2024-01-01" />
+        <label for="project">Project (select one):</label>
+     <select class="form-control w-90" id="project" name="project">
+       <option>Project 1</option>
+       <option>Project 2</option>
+       <option>Project 3</option>
+       <option>Project 4</option>
+     </select>
+        <label for="hours">Hours:</label>
+        <input class="form-control w-90" type="number" id="hours" name="hours" min="1" max="24" placeholder="8" />
+        <label for="description">Description:</label>
+        <textarea class="form-control w-90" type="text" id="description" name="description" placeholder="Enter description" rows="3"></textarea><br>
+    <div class="pull-left w-50 p-2">
+         <button type="submit" id="other_button_id" class="fa fa-paper-plane btn btn-dark btn-block">
+        <span class="d-none d-md-inline"> Submit</span>
+        </button>
+    </div>
+    <div class="pull-right w-50 p-2">
+ <button id="update_button" class="fa fa-refresh btn btn-dark btn-block" onclick="updates(event)">
+ <span class="d-none d-md-inline"> Update</span>
+ </button>
+    </div>
+    </div>
+</form>
+
+{% endblock %}

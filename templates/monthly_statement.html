@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Summary{% endblock %}
+{% block content %}
+<br>
+<div class="container">
+  <div class="row justify-content-center align-items-baseline">
+    <div class="col text-center">
+        <span class="fa fa-bar-chart fa-2x text-dark"></span>
+      <h3 class="d-inline-block mb-0 text-success fa-1x "> </h3>
+      <h3 class="d-inline-block mb-0 fa-1x"> Summary</h3>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        {% for month, records in months_with_totals.items() %}
+                {% if month == current_month %}
+                <label class="btn btn-sm btn-dark month-item active"  data-month="{{ month }}">
+                    {% else %}
+                    <label class="btn btn-sm btn-dark month-item"  data-month="{{ month }}">
+                {% endif %}
+                <input type="radio" autocomplete="off"> {{ month }} <br> Total (h): {{ records.total_hours }}
+                </label>
+                </label>
+        {% endfor %}
+    </div>
+</div>
+<br>
+<br>
+{% for month, records in months_with_totals.items() %}
+<div class="container month-container" id="{{ month }}" style="display: none;">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Date (yyyy-mm-dd)</th>
+                    <th>Hours (h)</th>
+                    <th>Project</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records.records %}
+                <tr>
+                    <td>{{ record.date }}</td>
+                    <td>{{ record.hours }}</td>
+                    <td>{{ record.project }}</td>
+                    <td>{{ record.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+    // Adaugă un eveniment de clic pe fiecare element al lunii
+    document.querySelectorAll('.month-item').forEach(item => {
+        item.addEventListener('click', event => {
+            // Verifică dacă tabelul este deja afișat sau ascuns
+            const container = document.getElementById(item.dataset.month);
+            if (container.style.display === 'none') {
+                // Ascunde toate containerele de luni
+                document.querySelectorAll('.month-container').forEach(container => {
+                    container.style.display = 'none';
+                });
+                // Afișează containerul lunii corespunzătoare
+                container.style.display = 'block';
+            } else {
+                // Ascunde containerul lunii corespunzătoare
+                container.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

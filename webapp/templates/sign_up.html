@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+
+<br>
+<div class="container">
+  <div class="row justify-content-center align-items-baseline">
+    <div class="col text-center">
+        <span class="fa fa-user-plus fa-2x text-dark"></span>
+      <h3 class="d-inline-block mb-0 text-success fa-1x "> </h3>
+      <h3 class="d-inline-block mb-0 fa-1x">Sign Up</h3>
+    </div>
+  </div>
+</div>
+<br>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+    </div>
+    <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name">
+    </div>
+    <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name">
+    </div>
+    <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter phone">
+    </div>
+ <div class="form-group">
+    <label for="function">Function (select one):</label>
+    <select class="form-control w-90" id="function" name="function">
+        <option value="worker" selected>Worker</option>
+        <option value="administrator">Administrator</option>
+    </select>
+</div>
+
+    <div class="form-group">
+        <label for="company">Company</label>
+        <input type="text" class="form-control" id="company" name="company" placeholder="Enter company">
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+    </div>
+    <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Password">
+    </div>
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+</form>
+{% endblock %}
